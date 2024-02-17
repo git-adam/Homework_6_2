@@ -40,7 +40,7 @@ namespace Homework_6_2
                     int lowerLimit = 1, upperLimit = 14;
                     var rnd = new Random();
                     var drawnNumber = rnd.Next(lowerLimit, upperLimit);
-                    SetImageLocation(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), $@"resource\{drawnNumber}.jpg"));
+                    SetImageLocation(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), $@"..\..\resource\{drawnNumber}.jpg"));
                 }
             }
             else
@@ -66,7 +66,7 @@ namespace Homework_6_2
             ofdBrowsePhoto.Filter = "Picture|*.jpg;*.jpeg;*.png;|All files (*.*)|*.*";
 
             if (_filePath == "")
-                ofdBrowsePhoto.InitialDirectory = Environment.CurrentDirectory;
+                ofdBrowsePhoto.InitialDirectory = Environment.CurrentDirectory;//Path.GetDirectoryName(Application.ExecutablePath);
             else
                 ofdBrowsePhoto.InitialDirectory = _filePath;
 
