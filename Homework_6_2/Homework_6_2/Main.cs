@@ -91,8 +91,11 @@ namespace Homework_6_2
 
         private void pbAddedPhoto_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            var FullScreenPhoto = new FullScreenPhoto();
-            FullScreenPhoto.ShowDialog();
+            if (PhotoPath != "")
+            {
+                var FullScreenPhoto = new FullScreenPhoto();
+                FullScreenPhoto.ShowDialog();
+            }
         }
 
         private void ofdBrowsePhoto_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
