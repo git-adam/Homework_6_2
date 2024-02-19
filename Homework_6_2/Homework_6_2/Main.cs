@@ -1,5 +1,6 @@
 ﻿using Homework_6_2.Properties;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -7,9 +8,7 @@ namespace Homework_6_2
 {
     public partial class Main : Form
     {
-        private string _filePath = "";
-
-        public string PhotoPath 
+        public string PhotoPath
         {
             get
             {
@@ -20,7 +19,6 @@ namespace Homework_6_2
                 Settings.Default.PhotoPath = value;
             }
         }
-
         public Main()
         {
             InitializeComponent();
@@ -31,7 +29,14 @@ namespace Homework_6_2
 
         private void InitImageLocationOnStart()
         {
-            if (Settings.Default.PhotoPath == "")
+            if (PhotoPath != "")
+            {
+                if (!File.Exists(PhotoPath))
+                    MessageBox.Show("Plik o podanej ścieżce nie istnieje!", "Komunikat", MessageBoxButtons.OK);
+                else
+                    SetImageData(true);
+            }
+            else
             {
                 var confirmDismiss = MessageBox.Show($"Czy chcesz wczytać zdjęcie domyślne?", "Wczytanie zdjęcia domyślnego", MessageBoxButtons.OKCancel);
 
@@ -40,57 +45,60 @@ namespace Homework_6_2
                     int lowerLimit = 1, upperLimit = 14;
                     var rnd = new Random();
                     var drawnNumber = rnd.Next(lowerLimit, upperLimit);
-                    SetImageLocation(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), $@"..\..\resource\{drawnNumber}.jpg"));
+                    UpdatePhotoPath(Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), $@"..\..\resource\{drawnNumber}.jpg"));
+
+                    if (!File.Exists(PhotoPath))
+                        MessageBox.Show("Plik o podanej ścieżce nie istnieje!", "Komunikat", MessageBoxButtons.OK);
+                    else
+                        SetImageData(true);
                 }
-            }
-            else
-            {
-                if (!File.Exists(Settings.Default.PhotoPath))
-                    MessageBox.Show("Plik o podanej ścieżce nie istnieje!", "Komunikat", MessageBoxButtons.OK);
-                SetImageLocation(Settings.Default.PhotoPath);
             }
         }
 
-        private void SetImageLocation(string path)
+        private void SetImageData(bool isDeleteButtonVisible)
         {
-            _filePath = path;
-            tbPhotoPath.Text = _filePath;
-            pbAddedPhoto.ImageLocation = _filePath;
-            btnDeletePhoto.Visible = true;
+            tbPhotoPath.Text = PhotoPath;
+            pbAddedPhoto.ImageLocation = PhotoPath;
+            btnDeletePhoto.Visible = isDeleteButtonVisible;
         }
 
         private void btnAddPhoto_Click(object sender, EventArgs e)
-
         {
+            ofdBrowsePhoto.FileName = "";
             ofdBrowsePhoto.FilterIndex = 1;
             ofdBrowsePhoto.Filter = "Picture|*.jpg;*.jpeg;*.png;|All files (*.*)|*.*";
-
-            if (_filePath == "")
-                ofdBrowsePhoto.InitialDirectory = Environment.CurrentDirectory;//Path.GetDirectoryName(Application.ExecutablePath);
-            else
-                ofdBrowsePhoto.InitialDirectory = _filePath;
-
+            ofdBrowsePhoto.InitialDirectory = PhotoPath == "" ? Environment.CurrentDirectory : PhotoPath;
             ofdBrowsePhoto.ShowDialog();
-
-            SetImageLocation(ofdBrowsePhoto.FileName.ToString());
-            
         }
 
         private void btnDeletePhoto_Click(object sender, EventArgs e)
         {
-            SetImageLocation("");
-            btnDeletePhoto.Visible = false;
+            UpdatePhotoPath("");
+            SetImageData(false);
         }
+
 
         private void Main_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (_filePath == null)
-                Settings.Default.PhotoPath = "";
-            else
-                Settings.Default.PhotoPath = _filePath;
+            UpdatePhotoPath(PhotoPath);
+        }
 
+        private void UpdatePhotoPath(string path)
+        {
+            Settings.Default.PhotoPath = path;
             Settings.Default.Save();
         }
 
+        private void pbAddedPhoto_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var FullScreenPhoto = new FullScreenPhoto();
+            FullScreenPhoto.ShowDialog();
+        }
+
+        private void ofdBrowsePhoto_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            UpdatePhotoPath(ofdBrowsePhoto.FileName.ToString());
+            SetImageData(true);
+        }
     }
 }

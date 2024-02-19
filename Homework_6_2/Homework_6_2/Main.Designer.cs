@@ -51,10 +51,12 @@ namespace Homework_6_2
             this.pbAddedPhoto.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbAddedPhoto.TabIndex = 0;
             this.pbAddedPhoto.TabStop = false;
+            this.pbAddedPhoto.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pbAddedPhoto_MouseDoubleClick);
             // 
             // ofdBrowsePhoto
             // 
             this.ofdBrowsePhoto.Title = "Przeglądaj zdjęcia";
+            this.ofdBrowsePhoto.FileOk += new System.ComponentModel.CancelEventHandler(this.ofdBrowsePhoto_FileOk);
             // 
             // btnAddPhoto
             // 
